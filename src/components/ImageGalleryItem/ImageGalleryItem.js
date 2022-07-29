@@ -12,9 +12,7 @@ export default function ImageGalleryItem({ webformatURL, tags }) {
 
 ImageGalleryItem.propTypes = {
   images: PropTypes.shape({
-    id: PropTypes.string,
     webformatURL: PropTypes.string,
-    // largeImageURL: PropTypes.string,
     tags: PropTypes.string,
   }),
 };
