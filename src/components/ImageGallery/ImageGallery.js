@@ -2,59 +2,78 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import ImageGalleryItem from '../ImageGalleryItem/ImageGalleryItem';
 import css from './ImageGallery.module.css';
-const BASE_URL = 'https://pixabay.com/api/';
+import Loader from '../Loader/Loader';
+import imagesApi from '../services/fetchApi';
+import { toast } from 'react-toastify';
 
-const searchParams = new URLSearchParams({
-  key: '28892188-479e66a0f895169366b55aa9c',
-  image_type: 'photo',
-  orientation: 'horizontal',
-  safesearch: true,
-  per_page: 12,
-});
 export default class ImageGallery extends Component {
   state = {
     search: null,
     page: 1,
-    images: null,
-    loading: false,
+    images: [],
+    error: null,
+    status: 'idle',
+    visible: false,
   };
 
-  async componentDidUpdate(prevProps, prevState) {
-    if (prevProps.search !== this.props.search) {
-      const url = `${BASE_URL}?q=${this.props.search}&${searchParams}&page=${this.state.page}`;
-      this.setState({ loading: true });
-      fetch(url)
-        .then(response => response.json())
+  componentDidUpdate(prevProps, _) {
+    const currentSearch = this.props.search;
+    const currentPage = this.props.page;
+    if (prevProps.search !== currentSearch || prevProps.page !== currentPage) {
+      this.setState({
+        status: 'pending',
+        page: currentPage,
+      });
+      imagesApi
+        .fetchApi(currentSearch, currentPage)
         .then(data => data.hits)
-        .then(images => this.setState({ images }))
-        .finally(() => this.setState({ loading: false }));
+        .then(images => {
+          if (images.length === 0) {
+            toast.info('There are no images for your request.', {
+              position: 'top-center',
+            });
+          }
+          this.setState({ images, status: 'resolved', visible: true });
+        })
+        .catch(error => this.setState({ error, status: 'rejected' }));
+      return;
     }
   }
+
   render() {
-    const { loading, images } = this.state;
-    return (
-      <ul className={css.imageGallery}>
-        {loading && <div>Loading...</div>}
-        {this.props.search === '' && (
-          <div>
-            What are we looking for? Please, enter a keyword in the search bar.
-          </div>
-        )}
-        {images &&
-          images.map(({ webformatURL, id, tags }) => (
-            <ImageGalleryItem
-              key={id}
-              tags={tags}
-              webformatURL={webformatURL}
-              //   deleteContacts={() => deleteContacts(id)}
-            />
-          ))}
-      </ul>
-    );
+    const { images, error, status } = this.state;
+    if (status === 'idle') {
+      return (
+        <div className={css.text}>
+          What are we looking for? Please, enter a keyword in the search bar.
+        </div>
+      );
+    }
+    if (status === 'pending') {
+      return <Loader />;
+    }
+    if (status === 'rejected') {
+      <h1>{error.message}</h1>;
+    }
+    if (status === 'resolved') {
+      return (
+        <>
+          <ul className={css.imageGallery}>
+            {images.map(({ webformatURL, id, tags, largeImageURL }) => (
+              <ImageGalleryItem
+                key={id}
+                tags={tags}
+                webformatURL={webformatURL}
+                largeImageURL={largeImageURL}
+                onImgClick={this.modalOpen}
+              />
+            ))}
+          </ul>
+        </>
+      );
+    }
   }
 }
-
-// largeImageURL: PropTypes.string,
 
 ImageGallery.propTypes = {
   images: PropTypes.shape({

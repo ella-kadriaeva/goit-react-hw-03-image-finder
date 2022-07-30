@@ -1,9 +1,19 @@
-// При клике по элементу галереи должно открываться модальное окно с темным оверлеем и отображаться большая версия изображения. Модальное окно должно закрываться по нажатию клавиши ESC или по клику на оверлее.
+import css from './Modal.module.css';
+import React from 'react';
+import PropTypes from 'prop-types';
 
-// Внешний вид похож на функционал этого VanillaJS-плагина, только вместо белого модального окна рендерится изображение (в примере нажми Run). Анимацию делать не нужно!
+const Modal = ({ largeImageURL }) => {
+  return (
+    <div className={css.overlay}>
+      <div className={css.modal}>
+        <img src={largeImageURL} />
+      </div>
+    </div>
+  );
+};
 
-// <div class="overlay">
-//   <div class="modal">
-//     <img src="" alt="" />
-//   </div>
-// </div>
+export default Modal;
+
+Modal.propTypes = {
+  largeImageURL: PropTypes.string,
+};
