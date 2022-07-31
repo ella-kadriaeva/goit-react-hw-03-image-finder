@@ -6,7 +6,7 @@ import Loader from '../Loader/Loader';
 import imagesApi from '../services/fetchApi';
 import { toast } from 'react-toastify';
 import Button from '../Button/Button';
-// import Modal from '../Modal/Modal';
+import Modal from '../Modal/Modal';
 export default class ImageGallery extends Component {
   state = {
     page: 1,
@@ -14,17 +14,15 @@ export default class ImageGallery extends Component {
     error: null,
     status: 'idle',
     showModal: false,
+    imageOnModal: '',
+    text: '',
   };
 
   componentDidUpdate(prevProps, prevState) {
     if (prevProps.search !== this.props.search) {
       this.setState(
         () => {
-          return {
-            page: 1,
-            images: [],
-            status: 'pending',
-          };
+          return { page: 1, images: [], status: 'pending' };
         },
         () => {
           this.fetchGallery();
@@ -67,9 +65,19 @@ export default class ImageGallery extends Component {
       });
     }, 1000);
   };
-
+  onClickGalleryItem = (src, alt) => {
+    this.toggleModal();
+    this.setState({ imageOnModal: src, text: alt });
+  };
+  toggleModal = () => {
+    this.setState(({ showModal }) => ({
+      showModal: !showModal,
+    }));
+  };
   render() {
-    const { images, error, status } = this.state;
+    const { images, error, status, showModal } = this.state;
+    const { imageOnModal, text } = this.state;
+
     if (status === 'idle') {
       return (
         <div className={css.text}>
@@ -81,29 +89,23 @@ export default class ImageGallery extends Component {
       return <Loader />;
     }
     if (status === 'rejected') {
-      <h1>{error.message}</h1>;
+      return error && <h1>{error.message}</h1>;
     }
     if (status === 'resolved') {
       return (
         <>
           {images.length > 0 && (
-            <ImageGallery
+            <ImageGalleryItem
               images={images}
-              handleLargeURLImage={this.handleLargeURLImage}
+              onClickGalleryItem={this.onClickGalleryItem}
             />
           )}
-          <ul className={css.imageGallery}>
-            {images.map(({ webformatURL, id, tags, largeImageURL }) => (
-              <ImageGalleryItem
-                key={id}
-                tags={tags}
-                webformatURL={webformatURL}
-                largeImageURL={largeImageURL}
-                onImgClick={this.modalOpen}
-              />
-            ))}
-          </ul>
           <Button onLoadMoreClick={this.loadMore} />
+          {showModal && (
+            <Modal onClick={this.onClickGalleryItem}>
+              <img src={imageOnModal} alt={text} />
+            </Modal>
+          )}
         </>
       );
     }
@@ -112,9 +114,10 @@ export default class ImageGallery extends Component {
 
 ImageGallery.propTypes = {
   images: PropTypes.shape({
-    id: PropTypes.string,
+    id: PropTypes.string.isRequired,
     webformatURL: PropTypes.string,
     tags: PropTypes.string,
+    largeImageURL: PropTypes.string,
   }),
-  getLargeImage: PropTypes.func,
+  onClickGalleryItem: PropTypes.func,
 };
