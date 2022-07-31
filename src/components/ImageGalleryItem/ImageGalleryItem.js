@@ -23,12 +23,6 @@ class ImageGalleryItem extends Component {
 
 ImageGalleryItem.propTypes = {
   onClickGalleryItem: PropTypes.func,
-  images: PropTypes.shape({
-    id: PropTypes.string.isRequired,
-    webformatURL: PropTypes.string,
-    tags: PropTypes.string,
-    largeImageURL: PropTypes.string,
-  }),
 };
 
 export default ImageGalleryItem;
