@@ -6,23 +6,23 @@ import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 export default class Searchbar extends Component {
   state = {
-    search: '',
+    searchQuery: '',
   };
 
   searchChange = e => {
-    this.setState({ search: e.currentTarget.value.toLowerCase() });
+    this.setState({ searchQuery: e.currentTarget.value.toLowerCase() });
   };
 
   searchSubmit = e => {
     e.preventDefault();
-    if (this.state.search.trim() === '') {
+    if (this.state.searchQuery.trim() === '') {
       toast.info('Please, enter a keyword in the search bar.', {
         position: 'top-center',
       });
       return;
     }
-    this.props.onSubmit(this.state.search);
-    this.setState({ search: '' });
+    this.props.onSubmit(this.state.searchQuery);
+    this.setState({ searchQuery: '' });
   };
 
   render() {
@@ -42,7 +42,7 @@ export default class Searchbar extends Component {
             name="search"
             autoFocus
             placeholder="Search images and photos"
-            value={this.state.search}
+            value={this.state.searchQuery}
             onChange={this.searchChange}
           />
         </form>
@@ -52,5 +52,5 @@ export default class Searchbar extends Component {
 }
 
 Searchbar.propTypes = {
-  search: PropTypes.string,
+  searchQuery: PropTypes.string,
 };

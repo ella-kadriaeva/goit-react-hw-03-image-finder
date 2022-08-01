@@ -1,23 +1,23 @@
 import React, { Component } from 'react';
-import Searchbar from './Searchbar/Searchbar';
+import Searchbar from '../Searchbar/Searchbar';
 import { ToastContainer } from 'react-toastify';
-import ImageGallery from './ImageGallery/ImageGallery';
+import GalleryApp from '../GalleryApp/GalleryApp';
 
 import css from './App.module.css';
 export default class App extends Component {
   state = {
-    search: '',
+    searchQuery: '',
   };
 
-  formSubmit = search => {
-    this.setState({ search });
+  formSubmit = searchQuery => {
+    this.setState({ searchQuery });
   };
 
   render() {
     return (
       <div className={css.app}>
         <Searchbar onSubmit={this.formSubmit} />
-        <ImageGallery search={this.state.search} />
+        <GalleryApp searchQuery={this.state.searchQuery} />
         <ToastContainer position="top-right" autoClose={2000} rtl={false} />
       </div>
     );
