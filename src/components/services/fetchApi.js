@@ -4,7 +4,7 @@ const searchParams = new URLSearchParams({
   image_type: 'photo',
   orientation: 'horizontal',
   safesearch: true,
-  per_page: 12,
+  per_page: 4,
 });
 function fetchApi(search, page) {
   const url = `${BASE_URL}?q=${search}&${searchParams}&page=${page}`;
