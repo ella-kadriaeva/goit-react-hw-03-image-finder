@@ -1,11 +1,11 @@
 import React, { Component } from 'react';
 import Searchbar from '../Searchbar/Searchbar';
-import { ToastContainer } from 'react-toastify';
+import { ToastContainer, toast } from 'react-toastify';
 import ImageGallery from '../ImageGallery/ImageGallery';
 import css from './App.module.css';
 import Loader from '../Loader/Loader';
 import imagesApi from '../services/fetchApi';
-import { toast } from 'react-toastify';
+
 import Button from '../Button/Button';
 export default class App extends Component {
   state = {
@@ -17,13 +17,11 @@ export default class App extends Component {
   };
   componentDidUpdate(_, prevState) {
     const { searchQuery, page } = this.state;
-    if (searchQuery !== prevState.searchQuery && searchQuery !== '') {
-      this.fetchGallery(searchQuery);
-    } else if (
-      searchQuery === prevState.searchQuery &&
-      page !== prevState.page
+    if (
+      searchQuery &&
+      (searchQuery !== prevState.searchQuery || page !== prevState.page)
     ) {
-      this.fetchGallery(searchQuery);
+      this.fetchGallery();
     }
   }
   formSubmit = searchQuery => {

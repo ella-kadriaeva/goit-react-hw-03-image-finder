@@ -5,38 +5,37 @@ import Modal from '../Modal/Modal';
 import ImageGalleryItem from 'components/ImageGalleryItem/ImageGalleryItem';
 export default class ImageGallery extends Component {
   state = {
-    imageOnModal: '',
-    text: '',
+    modal: {
+      largeImage: '',
+      alt: '',
+    },
   };
 
-  onClickGalleryItem = (src, alt) => {
-    this.toggleModal();
-    this.setState({ imageOnModal: src, text: alt });
+  openModal = (largeImage, alt) => {
+    this.setState({ modal: { largeImage, alt } });
   };
-  toggleModal = () => {
-    this.setState(({ imageOnModal }) => ({
-      imageOnModal: !imageOnModal,
-    }));
-  };
+
   render() {
     const { images } = this.props;
-    const { imageOnModal, text } = this.state;
+    const {
+      modal: { largeImage, alt },
+    } = this.state;
     return (
       <>
         <ul className={css.imageGallery}>
           {images.map(({ webformatURL, id, tags, largeImageURL }) => (
             <ImageGalleryItem
               key={id}
-              onClickGalleryItem={this.onClickGalleryItem}
+              onClickGalleryItem={this.openModal}
               webformatURL={webformatURL}
               tags={tags}
               largeImageURL={largeImageURL}
             />
           ))}
         </ul>
-        {imageOnModal && (
-          <Modal onClick={this.onClickGalleryItem}>
-            <img src={imageOnModal} alt={text} />
+        {largeImage && (
+          <Modal onClick={this.openModal}>
+            <img src={largeImage} alt={alt} />
           </Modal>
         )}
       </>
@@ -45,11 +44,9 @@ export default class ImageGallery extends Component {
 }
 
 ImageGallery.propTypes = {
-  id: PropTypes.string,
-  webformatURL: PropTypes.string,
-  tags: PropTypes.string,
-  largeImageURL: PropTypes.string,
-  onClickGalleryItem: PropTypes.func,
-  imageOnModal: PropTypes.string,
-  text: PropTypes.string,
+  images: PropTypes.shape({
+    id: PropTypes.string,
+    webformatURL: PropTypes.string,
+    tags: PropTypes.string,
+  }),
 };
